@@ -17,6 +17,8 @@ class Game
 
         if @mode == 'a'
             self.oneshot()
+        elsif @mode == 'b'
+            self.lastman()
         end    
     end
 
@@ -50,7 +52,6 @@ class Game
                 puts 'Invalid input! Please try again!'
             end
         end
-        puts num_players.to_s
         # Now let's ask the names of the players
         @player_names = ask_names(num_players)
         
@@ -58,7 +59,6 @@ class Game
         current_player = 0 # a variable that keeps track of the number of
                            # players
 
-        puts shot.to_s
         while shot == 0
             # Loop while someone hasn't been shot yet
             puts @player_names[current_player] + ", it's your turn\n"
@@ -71,9 +71,6 @@ class Game
             gets
 
             shot = gun.shoot() # shoots the gun
-            puts shot.to_s + "\n"
-            puts gun.cylinder_loc.to_s + "\n"
-            puts gun.cylinder.to_s + "\n"
 
             if shot == 1
                 # Someone has been shot
@@ -84,8 +81,6 @@ class Game
                 print "Click!"
                 print @player_names[current_player] + " is still alive!\n"
                 # Move on to the next player
-                puts "Current Player: " + current_player.to_s + "\n"
-                puts "Max Players: " + num_players.to_s + "\n"
                 if current_player == num_players
                     # We are at the last player already, so go to the first one
                     # again
@@ -97,6 +92,80 @@ class Game
             end
             gets
         end
+    end
+
+    def lastman()
+        # The gamemode wherein there would always be one bullet inside the gun,
+        # and players take turn shooting themselves. The last player alive is
+        # declared the winner.
+        gun = Gun.new() # create a gun
+        # Now we have to get the number of players who are going to play
+        num_players = 0 # initialize it to 0 first
+        while num_players <= 1
+            puts 'Please enter the number of players'
+            num_players = gets.chomp.to_i
+            if num_players <= 1
+                puts 'Invalid input! Try again!'
+            end
+        end
+        # Ask the names of the players
+        @player_names = ask_names(num_players)
+
+        # Initialize current player to 0
+        current_player = 0
+
+        while num_players > 1
+            # Loop while there is still more than one player
+            # Get the name of the current player
+            curr_player_name = @player_names[current_player]
+            
+            # Spin the gun
+            gun.spin()
+
+            # Tell the player that it is now their turn
+            puts curr_player_name + ", it's your turn!"
+            puts curr_player_name + ", please press enter to shoot yourself."
+            gets
+
+            if gun.shoot() == 1
+                # The current player has been shot
+                puts "BANG!"
+                puts curr_player_name + " has been shot and is out of the
+                    game!"
+                # Remove the player from the list of players
+                @player_names.delete_at(current_player)
+
+                # Decrease the number of players
+                num_players -= 1
+
+                # Load the gun with a bullet again
+                gun.load()
+            else
+                # Player was not shot
+                puts "CLICK!"
+                puts curr_player_name + " is still alive!"
+                if current_player == num_players - 1
+                    # Last location
+                    puts curr_player_name + " passes the gun to " +
+                        @player_names[0]
+                else
+                    # Elsewhere
+                    puts curr_player_name + " passes the gun to " +
+                        @player_names[current_player + 1]
+                end
+
+                # Go to the next player
+                if current_player == num_players - 1
+                    # We are at the last location
+                    current_player = 0
+                else
+                    # We are somewhere else
+                    current_player += 1
+                end
+            end
+        end
+        puts @player_names[0] + " is the winner!"
+        gets
     end
 
     def start_game()

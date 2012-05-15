@@ -30,7 +30,25 @@ class Gun
         # Spins the gun's cylinder, randomizing the current location
         @cylinder_loc = rand(0..5)
     end
-   
+  
+    def load(bullets = 1)
+        # Loads bullets into the gun, starting from the current location.
+        # Defaults to only one bullet. Multiple bullets are added sequentially
+        # in order.
+        while bullets > 0
+            # While we still have bullets to put in the cylinder, loop
+            if @cylinder[@cylinder_loc] == 1
+                # There is already a bullet here, move to the next
+                self.rotate()
+            else
+                # There's no bullet, put the bullet in it
+                @cylinder[@cylinder_loc] = 1
+                bullets -= 1 # decrement the number of bullets
+                self.rotate() # rotate the cylinder
+            end
+        end
+    end
+
     def rotate()
         # Rotates the gun's cylinder by one index. Usually done when the
         # trigger is pulled.
