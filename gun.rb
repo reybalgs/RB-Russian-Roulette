@@ -8,7 +8,6 @@ class Gun
         # however, if there is a given number, spin the cylinder.
         if cylinder_loc == 0
             @cylinder_loc = self.spin()
-            print "Cylinder loc after initial spin: " + @cylinder_loc.to_s
         else
             @cylinder_loc = cylinder_loc
         end
