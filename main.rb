@@ -66,20 +66,20 @@ class Game
             gun.spin()
             puts @player_names[current_player] + " spins the cylinder.\n"
             puts "Press enter to shoot.\n"
+            gets
 
             puts @player_names[current_player] + " pulls the trigger.\n"
-            gets
 
             shot = gun.shoot() # shoots the gun
 
             if shot == 1
                 # Someone has been shot
-                print "BANG!\n"
-                print @player_names[current_player] + " has been shot!\n"
+                puts "BANG!\n"
+                puts @player_names[current_player] + " has been shot!\n"
             else
                 # Current player didn't get shot
-                print "Click!"
-                print @player_names[current_player] + " is still alive!\n"
+                puts "Click!"
+                puts @player_names[current_player] + " is still alive!\n"
                 # Move on to the next player
                 if current_player == num_players - 1
                     # We are at the last player already, so go to the first one
@@ -130,8 +130,7 @@ class Game
             if gun.shoot() == 1
                 # The current player has been shot
                 puts "BANG!"
-                puts curr_player_name + " has been shot and is out of the
-                    game!"
+                puts curr_player_name + " has been shot and is out of the game!"
                 # Remove the player from the list of players
                 @player_names.delete_at(current_player)
 
@@ -140,6 +139,12 @@ class Game
 
                 # Load the gun with a bullet again
                 gun.load()
+
+                # If the player who was shot was the last player, go back to
+                # the first player
+                if current_player == num_players
+                    current_player = 0
+                end
             else
                 # Player was not shot
                 puts "CLICK!"
