@@ -81,7 +81,7 @@ class Game
                 print "Click!"
                 print @player_names[current_player] + " is still alive!\n"
                 # Move on to the next player
-                if current_player == num_players
+                if current_player == num_players - 1
                     # We are at the last player already, so go to the first one
                     # again
                     current_player = 0
