@@ -1,12 +1,14 @@
 class Gun
     # A class where gun objects are instantiated
+    attr_reader :cylinder_loc, :cylinder
     def initialize(bullets = 1, cylinder_loc = 0)
         # By default, there is always one bullet inside the gun
-        @bullets = bullet
+        @bullets = bullets
         # By default, the location of the cylinder is a random location,
         # however, if there is a given number, spin the cylinder.
         if cylinder_loc == 0
             @cylinder_loc = self.spin()
+            print "Cylinder loc after initial spin: " + @cylinder_loc.to_s
         else
             @cylinder_loc = cylinder_loc
         end
@@ -20,12 +22,13 @@ class Gun
             @cylinder_loc = self.spin()
             counter += 1
         end
+        # Debug message
+        puts "Cylinder: " + @cylinder.to_s
     end
 
     def spin()
         # Spins the gun's cylinder, randomizing the current location
-        cylinder_loc = rand(0..5)
-        return cylinder_loc
+        @cylinder_loc = rand(0..5)
     end
    
     def rotate()
