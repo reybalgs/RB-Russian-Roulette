@@ -264,6 +264,9 @@ class Game
                 # Someone got shot, so raise that flag
                 shot = 1
 
+                # Reset the safe rounds to 0
+                safe_rounds = 0
+
                 # If the player who was shot was the last player, go back to
                 # the first player
                 if current_player == num_players
@@ -296,7 +299,7 @@ class Game
                 end
             end
         end
-        puts "Congratulations, " + curr_player_name + ", you are a winner!"
+        puts("Congratulations, " + @player_names[0] + ", you are a winner!")
     end
 
     def start_game()
