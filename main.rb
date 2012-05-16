@@ -10,7 +10,7 @@ class Game
     def main_menu()
         # method that displays the main menu and accepts input from the user
         puts "Select a game mode"
-        puts "[a] oneshot [b] lastman"
+        puts "[a] oneshot [b] lastman [c] turbo lastman"
         puts "Your choice: "
         # wait for input from the user
         @mode = gets.chomp
@@ -19,6 +19,8 @@ class Game
             self.oneshot()
         elsif @mode == 'b'
             self.lastman()
+        elsif @mode == 'c'
+            self.turbo_lastman()
         end    
     end
 
@@ -151,12 +153,12 @@ class Game
                 puts curr_player_name + " is still alive!"
                 if current_player == num_players - 1
                     # Last location
-                    puts curr_player_name + " passes the gun to " +
-                        @player_names[0]
+                    puts(curr_player_name + " passes the gun to " +
+                        @player_names[0])
                 else
                     # Elsewhere
-                    puts curr_player_name + " passes the gun to " +
-                        @player_names[current_player + 1]
+                    puts(curr_player_name + " passes the gun to " +
+                        @player_names[current_player + 1])
                 end
 
                 # Go to the next player
@@ -171,6 +173,130 @@ class Game
         end
         puts @player_names[0] + " is the winner!"
         gets
+    end
+
+    def turbo_lastman()
+        # Turbo lastman is a gamemode that is quite similar to lastman, however,
+        # after two rounds of nobody getting shot, an additional bullet is
+        # placed in the cylinder. Another one is added once there is another
+        # two rounds where nobody gets shot, and so on. The winner is the last
+        # person alive.
+        gun = Gun.new() # create a gun
+        # Ask the number of players who are going to play
+        num_players = 0 # initialize to 0 to trigger the following loop
+        while num_players <= 1
+            puts 'Please enter the number of players'
+            num_players = gets.chomp.to_i
+            if num_players <= 1
+                puts 'Invalid input! Try again!'
+            end
+        end
+        # Now we have to ask the names of the players
+        @player_names = ask_names(num_players)
+
+        # Initialize the current player to the first one
+        current_player = 0
+        # A variable that tracks the number of rounds where nobody got shot
+        # yet
+        #
+        # Initialized to 0 because we still don't know if the first round is
+        # safe or not
+        safe_rounds = 0
+
+        # A variable that tracks the number of bullets in play in the game.
+        bullets = 1
+
+        # Variable that keeps track if someone gets shot during a round.
+        # safe_rounds depends on this variable
+        shot = 0
+
+        while num_players > 1
+            # We will loop the game while there is still more than one player
+            # Get the name of the current player
+            curr_player_name = @player_names[current_player]
+
+            # Turbo lastman feature
+            # If two safe rounds have passed, increase the constant number of
+            # bullets for every round.
+            if safe_rounds == 2
+                bullets += 1
+                # If we still haven't loaded the gun with the extra bullet yet,
+                # do it now
+                if gun.bullets < bullets 
+                    gun.load() # this tells the gun to load only one bullet
+                elsif gun.bullets == 0
+                    # There are no bullets in the gun, but this shouldn't
+                    # happen
+                    gun.load(bullets)
+                end
+                # Reset the safe rounds counter
+                safe_rounds = 0
+
+                # Announce what just happened
+                puts "Nobody has been shot for two rounds! Good job!"
+                puts("But that just means we are going to put an additional " +
+                     "bullet in the gun from now on!")
+                puts("Our gun now has " + bullets.to_s + " bullets!")
+                gets
+            end
+
+            # Spin the gun for randomness
+            gun.spin()
+
+            # Tell the current player that it is now their turn
+            puts curr_player_name + ", it's your turn!"
+            puts curr_player_name + ", please press enter to shoot yourself."
+            gets
+
+            if gun.shoot() == 1
+                # The current player has been shot
+                puts "BANG!"
+                puts curr_player_name + " has been shot and is out of the game!"
+                # Remove that player from the list of players
+                @player_names.delete_at(current_player)
+
+                # Decrease the number of players
+                num_players -= 1
+
+                # Load the gun with a bullet again
+                gun.load()
+
+                # Someone got shot, so raise that flag
+                shot = 1
+
+                # If the player who was shot was the last player, go back to
+                # the first player
+                if current_player == num_players
+                    current_player = 0
+
+                    # Reset shot to 0 because we went over the list
+                    shot = 0
+                end
+            else
+                # Player did not get shot
+                puts "CLICK!"
+                puts curr_player_name + " is still alive!"
+                if current_player == num_players - 1
+                    # Last location
+                    puts(curr_player_name + " passes the gun to " +
+                        @player_names[0])
+                    # Go to the first player
+                    current_player = 0
+                    # Since we've went past the last player without someone
+                    # getting shot, increment the number of safe rounds.
+                    if shot == 0
+                        safe_rounds += 1
+                    end
+                else
+                    # We are elsewhere
+                    puts(curr_player_name + " passes the gun to " +
+                         @player_names[current_player + 1])
+                    # Go to the next player
+                    current_player += 1
+                end
+            end
+        end
+        puts "Congratulations, " + curr_player_name + ", you are a winner!"
     end
 
     def start_game()

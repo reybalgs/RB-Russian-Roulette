@@ -1,6 +1,6 @@
 class Gun
     # A class where gun objects are instantiated
-    attr_reader :cylinder_loc, :cylinder
+    attr_reader :cylinder_loc, :cylinder, :bullets
     def initialize(bullets = 1, cylinder_loc = 0)
         # By default, there is always one bullet inside the gun
         @bullets = bullets
